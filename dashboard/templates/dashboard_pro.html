@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polymarket Bond Scanner - Professional</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: #0d1117; color: #c9d1d9; }
+        .header { background: #161b22; padding: 20px; border-bottom: 1px solid #30363d; }
+        .header h1 { margin: 0; color: #58a6ff; font-size: 24px; }
+        .header .subtitle { color: #8b949e; margin-top: 5px; }
+        .tabs { display: flex; background: #161b22; border-bottom: 1px solid #30363d; }
+        .tab { padding: 15px 25px; cursor: pointer; border-right: 1px solid #30363d; color: #8b949e; }
+        .tab.active { background: #0d1117; color: #58a6ff; border-bottom: 2px solid #58a6ff; }
+        .content { padding: 30px; }
+        .card { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 20px; margin-bottom: 20px; }
+        .card h3 { margin-top: 0; color: #58a6ff; border-bottom: 1px solid #30363d; padding-bottom: 10px; }
+        .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .metric { text-align: center; padding: 15px; background: #0d1117; border-radius: 6px; }
+        .metric .value { font-size: 28px; font-weight: bold; color: #58a6ff; }
+        .metric .label { color: #8b949e; font-size: 14px; margin-top: 5px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #161b22; color: #58a6ff; padding: 12px; text-align: left; border-bottom: 2px solid #30363d; }
+        td { padding: 12px; border-bottom: 1px solid #30363d; }
+        tr:hover { background: #161b22; }
+        .btn { background: #238636; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn:hover { background: #2ea043; }
+        .btn-secondary { background: #30363d; }
+        .btn-secondary:hover { background: #484f58; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Polymarket Bond Scanner</h1>
+        <div class="subtitle">Professional Trading Interface</div>
+    </div>
+    
+    <div class="tabs">
+        <div class="tab active" onclick="showTab('dashboard')">Dashboard</div>
+        <div class="tab" onclick="showTab('opportunities')">Opportunities</div>
+        <div class="tab" onclick="showTab('positions')">Positions</div>
+        <div class="tab" onclick="showTab('analytics')">Analytics</div>
+        <div class="tab" onclick="showTab('settings')">Settings</div>
+        <div class="tab" onclick="showTab('mechanics')">Trading Mechanics</div>
+    </div>
+    
+    <div class="content">
+        <div id="dashboard-tab" class="tab-content">
+            <div class="metrics">
+                <div class="metric">
+                    <div class="value" id="markets-scanned">1000</div>
+                    <div class="label">Markets Scanned</div>
+                </div>
+                <div class="metric">
+                    <div class="value" id="opportunities-found">26</div>
+                    <div class="label">Opportunities Found</div>
+                </div>
+                <div class="metric">
+                    <div class="value" id="open-positions">0</div>
+                    <div class="label">Open Positions</div>
+                </div>
+                <div class="metric">
+                    <div class="value" id="total-invested">$0</div>
+                    <div class="label">Total Invested</div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>Recent Activity</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Action</th>
+                            <th>Market</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activity-table">
+                        <tr><td colspan="4" style="text-align:center;color:#8b949e;">Loading activity...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div id="opportunities-tab" class="tab-content" style="display:none;">
+            <div class="card">
+                <h3>Trading Opportunities</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Market</th>
+                            <th>Probability</th>
+                            <th>Days Left</th>
+                            <th>Volume</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="opportunities-table">
+                        <tr><td colspan="5" style="text-align:center;color:#8b949e;">Loading opportunities...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div id="positions-tab" class="tab-content" style="display:none;">
+            <div class="card">
+                <h3>Active Positions</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Market</th>
+                            <th>Entry</th>
+                            <th>Current</th>
+                            <th>P&L</th>
+                            <th>Days Left</th>
+                        </tr>
+                    </thead>
+                    <tbody id="positions-table">
+                        <tr><td colspan="5" style="text-align:center;color:#8b949e;">No active positions</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div id="analytics-tab" class="tab-content" style="display:none;">
+            <div class="card">
+                <h3>Performance Analytics</h3>
+                <div style="height:300px;background:#0d1117;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#8b949e;">
+                    Performance Chart Area
+                </div>
+            </div>
+        </div>
+        
+        <div id="settings-tab" class="tab-content" style="display:none;">
+            <div class="card">
+                <h3>Bot Configuration</h3>
+                <div style="display:grid;gap:15px;">
+                    <div>
+                        <label style="display:block;margin-bottom:5px;color:#8b949e;">Scan Interval (minutes)</label>
+                        <input type="number" value="360" style="width:100%;padding:10px;background:#0d1117;border:1px solid #30363d;border-radius:6px;color:#c9d1d9;">
+                    </div>
+                    <div>
+                        <label style="display:block;margin-bottom:5px;color:#8b949e;">Minimum Probability (%)</label>
+                        <input type="number" value="93" step="0.1" style="width:100%;padding:10px;background:#0d1117;border:1px solid #30363d;border-radius:6px;color:#c9d1d9;">
+                    </div>
+                    <button class="btn">Save Settings</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="mechanics-tab" class="tab-content" style="display:none;">
+            <div class="card">
+                <h3>Trading Execution Mechanics</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                    <div style="background: #0d1117; padding: 20px; border-radius: 6px; border-left: 4px solid #238636;">
+                        <h4 style="margin-top: 0; color: #58a6ff;">1. Market Scanning</h4>
+                        <p style="color: #8b949e; margin: 10px 0;">Bot scans 1,000 Polymarket markets every 6 hours using Polygon RPC nodes.</p>
+                        <ul style="color: #8b949e; padding-left: 20px;">
+                            <li>Filters for markets with ≥93% probability</li>
+                            <li>Maximum 60 days to resolution</li>
+                            <li>Minimum $500 trading volume</li>
+                            <li>Identifies bond-like opportunities</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: #0d1117; padding: 20px; border-radius: 6px; border-left: 4px solid #d29922;">
+                        <h4 style="margin-top: 0; color: #58a6ff;">2. Opportunity Analysis</h4>
+                        <p style="color: #8b949e; margin: 10px 0;">Each opportunity undergoes rigorous risk assessment.</p>
+                        <ul style="color: #8b949e; padding-left: 20px;">
+                            <li>Quarter-Kelly position sizing</li>
+                            <li>$200 maximum per position</li>
+                            <li>10 maximum concurrent positions</li>
+                            <li>5% daily loss limit</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: #0d1117; padding: 20px; border-radius: 6px; border-left: 4px solid #da3633;">
+                        <h4 style="margin-top: 0; color: #58a6ff;">3. Trade Execution</h4>
+                        <p style="color: #8b949e; margin: 10px 0;">Automated execution via Polymarket CLOB using smart contracts.</p>
+                        <ul style="color: #8b949e; padding-left: 20px;">
+                            <li>Direct contract interactions on Polygon</li>
+                            <li>Gas optimization for cost efficiency</li>
+                            <li>Real-time price verification</li>
+                            <li>Slippage protection (max 2%)</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: #0d1117; padding: 20px; border-radius: 6px; border-left: 4px solid #8957e5;">
+                        <h4 style="margin-top: 0; color: #58a6ff;">4. Risk Management</h4>
+                        <p style="color: #8b949e; margin: 10px 0;">Continuous monitoring and automated risk controls.</p>
+                        <ul style="color: #8b949e; padding-left: 20px;">
+                            <li>ATR-based trailing stops</li>
+                            <li>Portfolio concentration limits</li>
+                            <li>Daily P&L tracking</li>
+                            <li>Emergency stop triggers</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; padding: 20px; background: #0d1117; border-radius: 6px;">
+                    <h4 style="margin-top: 0; color: #58a6ff;">Execution Flow</h4>
+                    <div style="display: flex; align-items: center; justify-content: space-between; color: #8b949e; margin: 15px 0;">
+                        <div style="text-align: center;">
+                            <div style="background: #161b22; width: 40px; height: 40px; line-height: 40px; border-radius: 50%; margin: 0 auto 10px;">1</div>
+                            <div>Market Scan</div>
+                        </div>
+                        <div style="flex: 1; height: 2px; background: #30363d;"></div>
+                        <div style="text-align: center;">
+                            <div style="background: #161b22; width: 40px; height: 40px; line-height: 40px; border-radius: 50%; margin: 0 auto 10px;">2</div>
+                            <div>Filter & Analyze</div>
+                        </div>
+                        <div style="flex: 1; height: 2px; background: #30363d;"></div>
+                        <div style="text-align: center;">
+                            <div style="background: #161b22; width: 40px; height: 40px; line-height: 40px; border-radius: 50%; margin: 0 auto 10px;">3</div>
+                            <div>Size Position</div>
+                        </div>
+                        <div style="flex: 1; height: 2px; background: #30363d;"></div>
+                        <div style="text-align: center;">
+                            <div style="background: #161b22; width: 40px; height: 40px; line-height: 40px; border-radius: 50%; margin: 0 auto 10px;">4</div>
+                            <div>Execute Trade</div>
+                        </div>
+                        <div style="flex: 1; height: 2px; background: #30363d;"></div>
+                        <div style="text-align: center;">
+                            <div style="background: #161b22; width: 40px; height: 40px; line-height: 40px; border-radius: 50%; margin: 0 auto 10px;">5</div>
+                            <div>Monitor & Manage</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').style.display = 'block';
+        }
+        
+        function updateData() {
+            fetch('/api/state')
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('markets-scanned').textContent = data.markets_scanned || 1000;
+                    document.getElementById('opportunities-found').textContent = data.opportunities_found || 26;
+                    document.getElementById('open-positions').textContent = data.open_positions || 0;
+                    document.getElementById('total-invested').textContent = '$' + (data.total_invested || 0);
+                });
+        }
+        
+        setInterval(updateData, 10000);
+        updateData();
+    </script>
+</body>
+</html>
